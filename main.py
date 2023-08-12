@@ -3,14 +3,12 @@ import streamlit as st
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
 from torchvision import transforms
-from torchvision import datasets
 import pytorch_lightning as pl
 import torchmetrics
 from torchmetrics.functional import accuracy
@@ -18,8 +16,7 @@ import torchsummary
 from torchsummary import summary
 from pytorch_lightning.loggers import CSVLogger
 
-from PIL import ImageS
-import numpy as np
+from PIL import Image
 
 from model import Net
 
@@ -30,14 +27,6 @@ st.write('アプリの自己紹介と説明書')
 
 
 # モデル
-
-# 前処理
-transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]), #ResNet18 0~255 → 0~1
-])
-
-
 # 学習済みモデルの読み込み
 @st.cache(allow_output_mutation=True)
 def load_model():
@@ -68,14 +57,21 @@ if uploaded_file:
     tensor_img = torch.FloatTensor(img_array).permute(0, 3, 1, 2) 
     with torch.no_grad():
         predictions = model(tensor_img)
-    predicted_class = np.argmax(predictions, axis=1)[0]
+    predicted_class = np.argmax(predictions, axis=1)[0].item()
+
+    # カテゴリに名前を付与
+    name = {
+        0: 'cat🐱',
+        1: 'dog🐶',
+    }
 
     #カテゴリに名前を付与
-    name = {
-    0: 'cat🐱',
-    1: 'dog🐶',
-    }
+    #if predicted_class == 0:
+     #   pred_name = 'cat 🐱',
+    #elif predicted_class == 1:
+     #   pred_name = 'dog 🐶'
+    
 
     # 予測結果の出力
     st.write('## Result')
-    st.write('This Uploaded Image is probabily ',str(name[0]),'!')
+    st.write(f'This Uploaded Image is probably a {name[predicted_class]}!')
