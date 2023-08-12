@@ -1,0 +1,18 @@
+streamlit
+numpy
+pandas
+matplotlib.pyplot
+torch
+torch.nn as nn
+torch.nn.functional
+torchvision
+transforms
+datasets
+pytorch_lightning
+torchmetrics
+accuracy
+torchsummary
+summary
+CSVLogger
+PIL
+Image
