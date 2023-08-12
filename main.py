@@ -18,7 +18,7 @@ import torchsummary
 from torchsummary import summary
 from pytorch_lightning.loggers import CSVLogger
 
-from PIL import Image
+from PIL import ImageS
 import numpy as np
 
 from model import Net
@@ -44,7 +44,7 @@ def load_model():
     model_path = "dog_cat.pth"
     model = Net()
     model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
-    model.eval()  # Set to evaluation mode
+    model.eval()
     return model
 
 model = load_model()
@@ -79,8 +79,3 @@ if uploaded_file:
     # 予測結果の出力
     st.write('## Result')
     st.write('This Uploaded Image is probabily ',str(name[0]),'!')
-
-
-# アプリを実行
-#if __name__ == '__main__':
-#    st.run()
