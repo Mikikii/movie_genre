@@ -47,7 +47,7 @@ transform = transforms.Compose([
 @st.cache(allow_output_mutation=True)
 def load_model():
     model_path = "dog_cat.pth"
-    model = Net(pl.LightningModule)
+    model = Net()
     model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
     model.eval()  # Set to evaluation mode
     return model
@@ -76,7 +76,7 @@ if uploaded_file:
     predicted_class = np.argmax(predictions, axis=1)[0]
 
     #カテゴリに名前を付与
-    number_to_name = {
+    name = {
     0: 'cat🐱',
     1: 'dog🐶',
     }
@@ -87,5 +87,5 @@ if uploaded_file:
 
 
 # アプリを実行
-if __name__ == '__main__':
-    st.run()
+#if __name__ == '__main__':
+#    st.run()
