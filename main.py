@@ -38,11 +38,6 @@ transform = transforms.Compose([
 ])
 
 
-# ベースモデルとしてresnet18を読み込み
-#base_model = resnet18(pretrained=True)
-#base_model.trainable = True
-
-
 # 学習済みモデルの読み込み
 @st.cache(allow_output_mutation=True)
 def load_model():

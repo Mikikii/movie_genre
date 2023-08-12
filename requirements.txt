@@ -3,7 +3,7 @@ numpy
 pandas
 matplotlib.pyplot
 torch
-torch.nn as nn
+torch.nn
 torch.nn.functional
 torchvision
 transforms
@@ -15,4 +15,4 @@ torchsummary
 summary
 CSVLogger
 PIL
-Image
+ImageS
