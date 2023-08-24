@@ -56,7 +56,7 @@ if uploaded_file:
     with torch.no_grad():
         logits = model(tensor_img)
         probabilities = torch.nn.functional.softmax(logits, dim=1)
-        predicted_class = torch.argmax(probabilities, dim=1).item()
+        predicted_class = torch.argmax(probabilities, dim=1)[0].item()
        #predictions = model(tensor_img)
        #predicted_class = np.argmax(predictions, axis=1)[0].item()
 
@@ -71,7 +71,7 @@ if uploaded_file:
         6: 'Fantasy ファンタジー',
         7: 'Horror ホラー',
         8: 'Mystery ミステリー',
-        9: 'Musical ミュージカル映画',
+        9: 'Musical 音楽・ミュージカル映画',
         10: 'Romance ラブストーリー',
         11: 'War 戦争映画',
     }
