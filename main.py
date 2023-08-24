@@ -75,6 +75,7 @@ if uploaded_file:
         10: 'Romance ラブストーリー',
         11: 'War 戦争映画',
     }
+    
 
     # 予測結果の出力
     st.write('## Result')
