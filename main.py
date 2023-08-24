@@ -54,11 +54,11 @@ if uploaded_file:
     #tensor_img = torch.FloatTensor(img_array).permute(0, 3, 1, 2)
     tensor_img = preprocess_image(image)
     with torch.no_grad():
-        logits = model(tensor_img)
-        probabilities = torch.nn.functional.softmax(logits, dim=1)
-        predicted_class = torch.argmax(probabilities, dim=1)[0].item()
-       #predictions = model(tensor_img)
-       #predicted_class = np.argmax(predictions, axis=1)[0].item()
+        #logits = model(tensor_img)
+        #probabilities = torch.nn.functional.softmax(logits, dim=1)
+        #predicted_class = torch.argmax(probabilities, dim=1)[0].item()
+       predictions = model(tensor_img)
+       predicted_class = np.argmax(predictions, axis=1)[0].item()
 
     # カテゴリに名前を付与
     name = {
