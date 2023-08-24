@@ -23,22 +23,27 @@ from torchvision.models import resnet18
 # 前処理
 transform = transforms.Compose([
     transforms.ToTensor(),
+    transforms.Resize((224, 224)),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]), #ResNet18 0~255 → 0~1
 ])
 
 
-# ネットワーク＊
+# ネットワーク
 class Net(pl.LightningModule):
 
     def __init__(self):
         super().__init__()
         # ResNet18 を特徴抽出機として使用するためにインスタンス化
-        self.feature = resnet18(pretrained=True)
-        self.fc = nn.Linear(1000, 2)
+        #self.feature = resnet18(pretrained=True)
+        self.feature = nn.Sequential(*list(resnet18(pretrained=True).children())[:-1])
+        # 全結合層　→　何分類から何分類へ?
+        #self.fc = nn.Linear(1000, 12)
+        self.fc = nn.Linear(512, 12)
 
 
     def forward(self, x):
         h = self.feature(x)
+        h = h.view(h.size(0), -1)  # Flatten
         h = self.fc(h)
         return h
 
@@ -62,30 +67,15 @@ class Net(pl.LightningModule):
 
 
     def test_step(self, batch, batch_idx):
-        x = batch
+        x,t = batch
         y = self.forward(x)
-        return y
-
-
-    def test_epoch_end(self, outputs):
-        all_outputs = torch.cat(outputs, 0)
-        return {"logits": all_outputs}
-
+        #return y
+        loss = F.cross_entropy(y, t)
+        self.log('test_loss', loss, on_step=False, on_epoch=True)
+        self.log('test_acc', accuracy(y.softmax(dim=-1), t), on_step=False, on_epoch=True)
+        return loss
 
 
     def configure_optimizers(self):
         optimizer = torch.optim.SGD(self.parameters(), lr=0.01)
         return optimizer
-
-
-def infer(model, dataloader):
-    model.eval()
-    all_outputs = []
-    with torch.no_grad():
-        for batch in dataloader:
-            x = batch
-            y = model(x)
-            all_outputs.append(y)
-
-    all_outputs = torch.cat(all_outputs, 0)
-    return all_outputs

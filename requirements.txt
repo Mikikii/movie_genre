@@ -5,9 +5,8 @@ matplotlib
 torch
 torchvision
 transforms
-torchvision
-pytorch_lightning
 torchmetrics
-accuracy
 torchsummary
+pytorch_lightning
+accuracy
 Pillow
