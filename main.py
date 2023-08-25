@@ -19,7 +19,7 @@ st.write('映画ポスターから、その映画のジャンルを判定しま�
 # 学習済みモデルの読み込み
 @st.cache(allow_output_mutation=True)
 def load_model():
-    model_path = "movie_poster_R1.pt"
+    model_path = "movie_poster_R34-20.pth"
     model = Net()
     model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
     model.eval()
@@ -38,7 +38,7 @@ def preprocess_image(image: Image.Image) -> torch.Tensor:
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
     img_tensor = preprocess(image)
-    return img_tensor.unsqueeze(0)  # バッチ次元を追加
+    return img_tensor.unsqueeze(0)
 
 
 if uploaded_file:
@@ -62,18 +62,13 @@ if uploaded_file:
 
     # カテゴリに名前を付与
     name = {
-        0: 'Action アクション',
-        1: 'Adventure アドベンチャー',
-        2: 'Comedy コメディ',
-        3: 'Suspense サスペンス・クライム',
-        4: 'Drama ヒューマンドラマ',
-        5: 'Family ファミリームービー',
-        6: 'Fantasy ファンタジー',
-        7: 'Horror ホラー',
-        8: 'Mystery ミステリー',
-        9: 'Musical 音楽・ミュージカル映画',
-        10: 'Romance ラブストーリー',
-        11: 'War 戦争映画',
+        0: 'Action, War  アクション・戦争映画',
+        1: 'Comedy  コメディ',
+        2: 'Suspense  サスペンス・クライム', 
+        3: 'Horror  ホラー',
+        4: 'Musical, Family  音楽・ミュージカル映画・ファミリームービー',
+        5: 'Romance  ラブストーリー',
+        6: 'Drama  ヒューマンドラマ',
     }
     
 

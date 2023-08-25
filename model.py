@@ -10,21 +10,22 @@ import torchvision
 from torchvision import transforms
 from torchvision import datasets
 import pytorch_lightning as pl
-import torchmetrics
-from torchmetrics.functional import accuracy
+from pytorch_lightning.loggers import CSVLogger
 import torchsummary
 from torchsummary import summary
-from pytorch_lightning.loggers import CSVLogger
+import torchmetrics
+from torchmetrics.functional import accuracy
+from torch.optim.lr_scheduler import StepLR
 
 # 学習済みネットワークの利用
-from torchvision.models import resnet18
+from torchvision.models import resnet34
 
 
 # 前処理
 transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Resize((224, 224)),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]), #ResNet18 0~255 → 0~1
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
 
 
@@ -33,17 +34,17 @@ class Net(pl.LightningModule):
 
     def __init__(self):
         super().__init__()
-        # ResNet18 を特徴抽出機として使用するためにインスタンス化
-        #self.feature = resnet18(pretrained=True)
-        self.feature = nn.Sequential(*list(resnet18(pretrained=True).children())[:-1])
-        # 全結合層　→　何分類から何分類へ?
-        #self.fc = nn.Linear(1000, 12)
-        self.fc = nn.Linear(512, 12)
+        self.feature = nn.Sequential(*list(resnet34(pretrained=True).children())[:-1])
+        self.fc_bn = nn.BatchNorm1d(512)
+        self.dropout = nn.Dropout(0.5)
+        self.fc = nn.Linear(512, 7)
 
 
     def forward(self, x):
         h = self.feature(x)
-        h = h.view(h.size(0), -1)  # Flatten
+        h = h.view(h.size(0), -1)
+        h = self.fc_bn(h)
+        h = self.dropout(h)
         h = self.fc(h)
         return h
 
@@ -52,7 +53,7 @@ class Net(pl.LightningModule):
         x, t = batch
         y = self(x)
         loss = F.cross_entropy(y, t)
-        self.log('train_loss', loss, on_step=True, on_epoch=True, prog_bar=True) #prog_bar=True
+        self.log('train_loss', loss, on_step=True, on_epoch=True, prog_bar=True)
         self.log('train_acc', accuracy(y.softmax(dim=-1), t), on_step=True, on_epoch=True, prog_bar=True)
         return loss
 
@@ -67,9 +68,8 @@ class Net(pl.LightningModule):
 
 
     def test_step(self, batch, batch_idx):
-        x,t = batch
+        x = batch
         y = self.forward(x)
-        #return y
         loss = F.cross_entropy(y, t)
         self.log('test_loss', loss, on_step=False, on_epoch=True)
         self.log('test_acc', accuracy(y.softmax(dim=-1), t), on_step=False, on_epoch=True)
